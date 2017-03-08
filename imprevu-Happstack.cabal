@@ -1,4 +1,4 @@
-name: Imprevu-Happstack
+name: imprevu-Happstack
 version: 0.1.0
 cabal-version: >=1.8
 build-type: Simple
@@ -18,7 +18,7 @@ extra-source-files: AUTHORS README
 
 library
     build-depends: DebugTraceHelpers  == 0.12.*,
-                   Imprevu            == 0.1.*,
+                   imprevu            == 0.1.*,
                    base               >= 4.6 && < 5,
                    containers         == 0.5.*,
                    lens               >= 4.7 && < 4.15,
