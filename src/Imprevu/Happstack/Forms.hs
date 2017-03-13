@@ -51,7 +51,7 @@ viewInput' me backlink en (SomeSignal (Signal s)) = do
    _ -> return Nothing
 
 inputForm' :: InputField -> ImpForm InputData
-inputForm' (Radio s choices)    = RadioData    <$> RB.label s ++> (RB.inputRadio choices (== 0)) <++ RB.label (" " :: String)
+inputForm' (Radio s choices)    = RadioData    <$> RB.label s ++> (inputRadio' choices (== 0)) <++ RB.label (" " :: String)
 inputForm' (Text s)             = TextData     <$> RB.label s ++> (RB.inputText "") <++ label (" " :: String)
 inputForm' (TextArea s)         = TextAreaData <$> RB.label s ++> (textarea 50 5  "") <++ label (" " :: String)
 inputForm' (Button s)           = pure ButtonData   <$> RB.label s
@@ -89,4 +89,17 @@ blazeForm html link =
          ! A.enctype "multipart/form-data" $
             do html
                input ! A.type_ "submit" ! A.value "Submit"
+
+-- | Create a group of radio elements without BR between elements
+inputRadio' :: (Functor m, Monad m, FormError error, ErrorInputType error ~ input, FormInput input, ToMarkup lbl) =>
+              [(a, lbl)]  -- ^ value, label, initially checked
+           -> (a -> Bool) -- ^ isDefault
+           -> Form m input error Html () a
+inputRadio' choices isDefault =
+   G.inputChoice isDefault choices mkRadios
+   where
+      mkRadios nm choices' = mconcat $ concatMap (mkRadio nm) choices'
+      mkRadio nm (i, val, lbl, checked) =
+         [ (if checked then (! A.checked "checked") else Prelude.id) $ input ! A.type_ "radio" ! A.id (toValue i) ! A.name (toValue nm) ! A.value (toValue val)
+         , " ", H.label ! A.for (toValue i) $ toHtml lbl]
 
